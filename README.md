@@ -80,10 +80,10 @@ Fotó alapján azonosítva. Látszik rajta a „Board Computer” menü BC1/BC2/
 ### Ami még hiányzik
 
 1. **Melyik rádió van?** GID mellé jellemzően CD30MP3 vagy CDC40 Opera járt. Fotó a rádió előlapjáról elég.
-2. **Van-e AUX?**
-   - Nyomkodd a forrásváltó gombot (FM/CD), és nézd, megjelenik-e az „AUX”.
-   - A *Settings* menüben is lehet „AUX” menüpont.
-   - Ha nincs, lehet, hogy a hardver tudja, csak aktiválni kell OP-COM-mal.
+2. ~~Van-e AUX?~~ **Van: gyári AUX aljzat a kézifék mögött.**
+   - Ez gyárilag be van kötve és aktiválva, így az A változathoz **nem kell a rádióhoz nyúlni**.
+   - A Pi USB hangkártyájától egy 3,5 mm-es jack kábel megy ebbe az aljzatba, és kész.
+   - Ez CD30MP3-mal és CDC40 Operával is ugyanígy működik.
 3. **Van-e gyári kihangosító (UHP)?** Árulkodó jel, ha a GID főmenüjében van telefon menüpont, a tetőkonzolban mikrofon, vagy telefontartó-adapter a középkonzolban.
 
 ---
@@ -358,7 +358,7 @@ Ez köti össze az autót és az AA-t. Referenciakód Astra H-ra: [EHU32](https:
 
 ## 10. Következő lépések
 
-1. **Felmérés:** a kijelző GID (fotó alapján). Még kell: a rádió típusa, van-e AUX, van-e gyári kihangosító. Lásd [1. fejezet](#ami-még-hiányzik).
+1. **Felmérés:** a kijelző GID (fotó alapján), és van gyári AUX aljzat a kézifék mögött. Még kell: a rádió típusa és hogy van-e gyári kihangosító. Lásd [1. fejezet](#ami-még-hiányzik).
 2. **Asztali próba, az autó nélkül:**
    1. Pi4 + RPi OS Lite (Trixie) + LIVI + bármilyen HDMI kijelző.
    2. S20 FE vezeték nélküli AA-val.
