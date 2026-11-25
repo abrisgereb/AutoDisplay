@@ -10,6 +10,8 @@ A CAN-busz részletes leírása (ID-k, bájtok, szövegküldés a gyári kijelz�
 
 ## Röviden
 
+> **A te autódra (GID + CD30 MP3 + gyári AUX, kihangosító nélkül) szabott terv és bevásárlólista: [A te autódra szabva](#a-te-autódra-szabva).** Az alábbiak az általános kutatás.
+
 - **Megépíthető, nagyrészt használt alkatrészekből**, a meglévő RPi4-en felül kb. **25–55 ezer Ft-ból** (rádió marad), vagy **40–75 ezer Ft-ból** (Pi a rádió helyén).
 - **Ne lecseréld, hanem egészítsd ki a gyári rendszert.** Az Astra H gyári kis kijelzője (TID/BID/GID/CID) nemcsak kijelző. Ez a **gateway**, ami az autó adatait (sebesség, fordulat, hűtővíz, hatótáv, világítás, gyújtás) átadja az MS-CAN buszra. A fedélzeti számítógépet (BC) is **a kijelző maga számolja**. Ha bent marad és be van kötve, minden gyári funkció megmarad, a Pi pedig hozzáadja az Android Autót. ⚠️ (erős következtetés, több jel támasztja alá)
 - **A Pi a CAN-buszon keresztül épül be:**
@@ -27,6 +29,69 @@ A CAN-busz részletes leírása (ID-k, bájtok, szövegküldés a gyári kijelz�
 - **Samsung S20 FE** = a telefon, ami az Android Autót futtatja (vezeték nélküli AA-t is tud).
 - **Kindle:** autóba nem való. Üzemi hőmérséklete 0–35 °C, az e-ink lassú, és a lítium akku nem bírja a nyári autót.
 - **Ha csak gyorsan működő AA kell:** egy használt, Astra H-hoz gyártott kínai Android fejegység CAN-dobozzal **40–60 ezer Ft**. Ez nagyjából annyi, mint a DIY, kevesebb munkával, de gyengébb integrációval. Lásd a [8. fejezetet](#8-vásárlás-vagy-építés).
+
+---
+
+## A te autódra szabva
+
+**Autó:** Opel Astra H, **GID** (3 soros grafikus kijelző), **CD30 MP3** rádió, **gyári AUX aljzat a kézifék mögött**, gyári kihangosító nincs.
+
+**Választott megoldás: A változat.**
+- A rádió és a GID marad, a Pi kiegészíti őket.
+- A rádiót nem kell kiszerelni, kódolni sem kell semmit, és bármikor visszaállítható.
+- A CD30 MP3 + GID + AUX kombinációt az [EHU32](https://github.com/PNKP237/EHU32) projekt kifejezetten támogatja, így a GID-re írás bevált módszerrel megy.
+
+### Hogyan fog működni
+
+1. **Gyújtás rá.** A Pi bootol, az S20 FE magától csatlakozik vezeték nélküli Android Autóval.
+2. **A rádió AUX-on áll.** Minden hang (zene, navigáció, hívás) a gyári hangszórókból szól. A hangerőt ugyanúgy a rádió gombja és a kormány görgője állítja.
+3. **Kormány következő/előző gomb:** az AA zenét lépteti.
+4. **GID:**
+   - BC1/BC2, stopper, külső hőmérséklet, óra és figyelmeztetések **változatlanul** működnek.
+   - AUX módban a Pi kiírja a három sorba az előadót, a címet és az albumot.
+   - Híváskor a hívó nevét írja ki.
+5. **A Pi képernyőjén:** Android Auto, és egy dashboard oldal (sebesség, fordulat, hűtővíz, hatótáv, akkufeszültség).
+6. **Gyújtás le.** 1–2 perc múlva a Pi leáll, utána nem fogyaszt (< 1 mA).
+
+### Bevásárlólista
+
+| Alkatrész | Ajánlás | Ár (HUF) |
+|---|---|---|
+| Raspberry Pi 4 | – | **megvan** |
+| microSD 32 GB | *High Endurance* típus | 3–5 e |
+| 7" érintőkijelző | **HDMI + USB érintős, 1024×600, kapacitív**. Ezzel a Pi messzebb is lehet a képernyőtől, pl. a középkonzolban. A hivatalos Touch Display 2 rövid szalagkábeles (DSI), azzal a Pi-nek közvetlenül a képernyő mögött kell lennie | 8–20 e (használt) |
+| CAN HAT | Waveshare RS485 CAN HAT | 4–6 e |
+| OBD kábel | OBD-II dugós pigtail vagy elosztó. A 3-as, 11-es és 4/5-ös tű kell | 1–5 e |
+| USB Bluetooth dongle | CSR8510 vagy Realtek | 1–4 e |
+| USB hangkártya mikrofon-bemenettel | CM108/CM119 | 1–3 e |
+| Mikrofon | autós kihangosító electret mikrofon, 3,5 mm-es, ~3 m kábellel | 1–3 e |
+| Jack kábel | 3,5 mm – 3,5 mm, a hangkártyától a kézifék mögötti AUX aljzatig | ~1 e |
+| Táp | 12→5,1 V buck konverter (min. 4–5 A) + relé/MOSFET + optocsatoló + biztosíték. *Vagy* CarPiHAT (15–25 e) | 3–6 e |
+| Hűtőház | alumínium passzív Pi4 ház | 1–4 e |
+| Képernyőtartó | 3D nyomtatott, tapadókorongos vagy szellőzőrácsos | 2–5 e |
+| Földhurok-leválasztó | csak ha zúg | 1–2 e |
+| **Összesen** | | **kb. 26–64 ezer Ft** |
+
+**Nem kell:** új rádió, OP-COM, AUX kábel a rádió mögé, 2DIN keret, erősítő.
+
+### Építési sorrend
+
+1. **Asztali próba otthon.**
+   1. Pi4 + Raspberry Pi OS Lite (Trixie) + LIVI + kijelző + S20 FE.
+   2. USB BT dongle + hangkártya + mikrofon, a hangkártyára fejhallgatót vagy hangszórót kötve.
+   3. **Próbahívás.** Ez a legkényesebb rész, ezért legyen az első.
+2. **CAN-felvétel az autóban.**
+   1. CAN HAT + OBD kábel, csak hallgatás módban.
+   2. Kövesd a [docs/can-uzenetek.md](docs/can-uzenetek.md) végén leírt lépéseket.
+   3. A `candump` log fájlt küldd el nekem.
+3. **CAN démon.** A log alapján megírom: kormánygomb → AA, szöveg → GID, adatok → dashboard.
+4. **Táp.**
+   1. Gyújtásérzékelés és késleltetett leállítás.
+   2. Mérd meg a kikapcsolt áramfelvételt (< 1 mA legyen).
+5. **Beépítés.**
+   - **Pi:** a középkonzolba vagy a kesztyűtartó mögé, ahonnan elérhető az AUX aljzat, az OBD és a táp.
+   - **Mikrofon:** a tetőkárpitra, a visszapillantó tükör mellé. A kábel az A-oszlop burkolata mögött fut le, a függönylégzsák **mögött**, nem előtte.
+   - **Képernyő:** tartóra, a légzsák útjából és a szélvédő látómezejéből kiesve.
 
 ---
 
@@ -77,14 +142,13 @@ Fotó alapján azonosítva. Látszik rajta a „Board Computer” menü BC1/BC2/
   - így a valós ár kb. **63–97 ezer Ft**;
   - előfordulhat még GID-kódolási gond és hamis hibaüzenet a kijelzőn.
 
-### Ami még hiányzik
+### A te rádiód és felszereltséged
 
-1. **Melyik rádió van?** GID mellé jellemzően CD30MP3 vagy CDC40 Opera járt. Fotó a rádió előlapjáról elég.
-2. ~~Van-e AUX?~~ **Van: gyári AUX aljzat a kézifék mögött.**
-   - Ez gyárilag be van kötve és aktiválva, így az A változathoz **nem kell a rádióhoz nyúlni**.
-   - A Pi USB hangkártyájától egy 3,5 mm-es jack kábel megy ebbe az aljzatba, és kész.
-   - Ez CD30MP3-mal és CDC40 Operával is ugyanígy működik.
-3. **Van-e gyári kihangosító (UHP)?** Árulkodó jel, ha a GID főmenüjében van telefon menüpont, a tetőkonzolban mikrofon, vagy telefontartó-adapter a középkonzolban.
+- **Rádió: CD30 MP3.** Az EHU32 projekt kifejezetten támogatja.
+- **AUX: gyári aljzat a kézifék mögött.** Gyárilag be van kötve és aktiválva, így nem kell a rádióhoz nyúlni, se kódolni.
+- **Gyári kihangosító: nincs.** Nincs mivel ütköznie a Pi-nek. A mikrofon saját lesz, a hívás hangja az AUX-on szól.
+
+A konkrét terv: [A te autódra szabva](#a-te-autódra-szabva).
 
 ---
 
@@ -358,7 +422,7 @@ Ez köti össze az autót és az AA-t. Referenciakód Astra H-ra: [EHU32](https:
 
 ## 10. Következő lépések
 
-1. **Felmérés:** a kijelző GID (fotó alapján), és van gyári AUX aljzat a kézifék mögött. Még kell: a rádió típusa és hogy van-e gyári kihangosító. Lásd [1. fejezet](#ami-még-hiányzik).
+1. **Felmérés: kész ✅** GID, CD30 MP3, gyári AUX a kézifék mögött, gyári kihangosító nincs. A konkrét terv: [A te autódra szabva](#a-te-autódra-szabva).
 2. **Asztali próba, az autó nélkül:**
    1. Pi4 + RPi OS Lite (Trixie) + LIVI + bármilyen HDMI kijelző.
    2. S20 FE vezeték nélküli AA-val.
