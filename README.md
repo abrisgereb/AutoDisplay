@@ -53,6 +53,55 @@ A CAN-busz részletes leírása (ID-k, bájtok, szövegküldés a gyári kijelz�
 5. **A Pi képernyőjén:** Android Auto, és egy dashboard oldal (sebesség, fordulat, hűtővíz, hatótáv, akkufeszültség).
 6. **Gyújtás le.** 1–2 perc múlva a Pi leáll, utána nem fogyaszt (< 1 mA).
 
+### Komponensek
+
+Részletes, négy ábrás változat (áttekintés, CAN-busz, hang és kihangosítás, táp és gyújtás): **[Astra H fedélzeti gép – komponensdiagram](https://claude.ai/artifact/WY2ufB11ifokPkeRq6zKy2)**
+
+```mermaid
+flowchart LR
+  subgraph TEL["Telefon"]
+    S20["Samsung S20 FE<br/>Android Auto"]
+  end
+  subgraph UJ["Új alkatrészek"]
+    WIFI["Wi-Fi 5 GHz<br/>(a Pi-ben)"]
+    BT["USB BT dongle"]
+    PI["Raspberry Pi 4<br/>LIVI · CAN-démon · PipeWire"]
+    LCD["7 colos érintőkijelző"]
+    HAT["CAN HAT<br/>MCP2515"]
+    SND["USB hangkártya"]
+    MIC["Mikrofon"]
+    PWR["Táp-modul<br/>buck 5,1 V · relé · opto"]
+  end
+  subgraph GY["Gyári autó"]
+    AKKU["Akku 12 V + gyújtás jel"]
+    BUS{{"MS-CAN · 95,238 kbit/s"}}
+    OTHER["SW-CAN + HS-CAN<br/>óracsoport, CIM, kormány"]
+    GID["GID kijelző<br/>átjáró + BC"]
+    KLIMA["Klímapanel"]
+    RADIO["CD30 MP3 rádió"]
+    AUX["AUX aljzat<br/>kézifék mögött"]
+    SPK["Hangszórók"]
+  end
+  S20 <-->|"Android Auto (Wi-Fi)"| WIFI
+  S20 <-->|"hívás (Bluetooth HFP)"| BT
+  WIFI --- PI
+  BT ---|USB| PI
+  PI <-->|"HDMI + USB"| LCD
+  PI ---|SPI| HAT
+  HAT <-->|"OBD 3/11"| BUS
+  BUS --- GID
+  BUS --- KLIMA
+  BUS --- RADIO
+  OTHER -.-|átjáró| GID
+  MIC -->|"3,5 mm"| SND
+  PI <-->|USB| SND
+  SND -->|jack| AUX
+  AUX --> RADIO
+  RADIO --> SPK
+  AKKU -->|"12 V"| PWR
+  PWR -->|"5,1 V"| PI
+```
+
 ### Bevásárlólista
 
 | Alkatrész | Ajánlás | Ár (HUF) |
