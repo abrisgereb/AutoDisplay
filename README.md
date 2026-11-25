@@ -129,10 +129,9 @@ flowchart LR
    1. Pi4 + Raspberry Pi OS Lite (Trixie) + LIVI + kijelző + S20 FE.
    2. USB BT dongle + hangkártya + mikrofon, a hangkártyára fejhallgatót vagy hangszórót kötve.
    3. **Próbahívás.** Ez a legkényesebb rész, ezért legyen az első.
-2. **CAN-felvétel az autóban.**
-   1. CAN HAT + OBD kábel, csak hallgatás módban.
-   2. Kövesd a [docs/can-uzenetek.md](docs/can-uzenetek.md) végén leírt lépéseket.
-   3. A `candump` log fájlt küldd el nekem.
+2. **CAN-felvétel az autóban.** Pontos eszközlista, bekötés és lépések: **[docs/can-felvetel.md](docs/can-felvetel.md)**.
+   - A [`tools/can-felvetel.sh`](tools/can-felvetel.sh) szkript lépésenként végigvezet.
+   - A kész mappát (`can.log.gz`, `jelolok.txt`, `interfesz.txt`) küldd el nekem.
 3. **CAN démon.** A log alapján megírom: kormánygomb → AA, szöveg → GID, adatok → dashboard.
 4. **Táp.**
    1. Gyújtásérzékelés és késleltetett leállítás.
@@ -519,10 +518,7 @@ Ez köti össze az autót és az AA-t. Referenciakód Astra H-ra: [EHU32](https:
    2. S20 FE vezeték nélküli AA-val.
    3. USB BT dongle + hangkártya + mikrofon, majd **próbahívás**.
    4. Ha a hívás nem jó, ezen a ponton derül ki, nem beépítés után.
-3. **CAN felmérés:**
-   1. CAN HAT + OBD kábel, listen-only módban, `candump -l can0`.
-   2. Felvétel gyújtás rá, gombnyomások, motor jár, menet és tolatás közben.
-   3. Az eredményt vesd össze a [docs/can-uzenetek.md](docs/can-uzenetek.md) táblázatával.
+3. **CAN-felvétel:** a [docs/can-felvetel.md](docs/can-felvetel.md) leírás és a [`tools/can-felvetel.sh`](tools/can-felvetel.sh) szkript alapján. Az eredményt a [docs/can-uzenetek.md](docs/can-uzenetek.md) táblázatával vetjük össze.
 4. **CAN démon megírása:** kormánygomb → AA, szöveg → gyári kijelző, telemetria → dashboard. Ebben tudok segíteni, ha megvan a CAN log.
 5. **Beépítés az A változattal**, utána, ha megérte, a B változat.
 

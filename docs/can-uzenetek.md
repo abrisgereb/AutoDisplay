@@ -228,19 +228,6 @@ A `b0`, `b1`… a bájt sorszámát jelöli, 0-tól számolva.
 9. Vannak-e ajtó üzenetek az MS-CAN-en.
 10. CID esetén elfogadja-e az RGB bemenet a Pi képét a natív időzítéssel.
 
-### Ajánlott első felvétel
+### Felvétel
 
-```
-candump -l can0
-```
-
-Ezt futtasd, miközben sorban végigcsinálod:
-1. kulcs be, majd gyújtás;
-2. minden rádió- és kormánygomb egyenként;
-3. motor indítás;
-4. világítás be/ki;
-5. tolatás;
-6. rövid menet;
-7. gyújtás le, majd várj 2 percet.
-
-Minden lépés előtt jegyezd fel az időt, hogy utólag szét lehessen válogatni.
+A pontos eszközlista, a bekötés és a lépésenként végigvezető szkript: **[docs/can-felvetel.md](can-felvetel.md)** és [`tools/can-felvetel.sh`](../tools/can-felvetel.sh).
