@@ -59,7 +59,32 @@ A 2008-as modellévtől (kb. 2007/08-tól) gyári AUX aljzat is lehet a kézifé
 
 Gyári kihangosító (UHP vagy Bluetooth UHP4) GID/CID kijelzővel volt. Ha van, a tetőkonzolban mikrofon is van.
 
-**Írd meg nekem a kijelző és a rádió típusát, és hogy van-e AUX és gyári kihangosító.** Ezek alapján tudom pontosítani a tervet.
+### A te autód: GID, 3 soros grafikus kijelző
+
+Fotó alapján azonosítva. Látszik rajta a „Board Computer” menü BC1/BC2/Timer fülekkel, a külső hőmérséklet és az óra. Ez a következőket jelenti:
+
+- **Mindent a kijelző maga számol és mutat:** BC1/BC2 (megtett út, átlagsebesség, elfogyasztott üzemanyag, átlagfogyasztás, pillanatnyi fogyasztás, hatótáv), stopper, külső hőmérséklet, óra, Check-Control figyelmeztetések. **Az A változatban ezek 100%-ban megmaradnak**, és továbbra is a kormány bal görgőjével lapozhatók.
+- **Három sorba lehet írni** (a 0x10/0x11/0x12 mezők). A Pi kiírhatja például:
+  - az előadót, a számot és az albumot;
+  - a hívó nevét és a számát;
+  - a következő navigációs lépést, pl. „200 m · jobbra · Petőfi utca”.
+- **A GID-nek van telefon-képernyője és nyilas navigációs képernyője** (képernyőtípus 07 és 09). Ezeket a gyári UHP kihangosító és a CD70 Navi használja. Elvben a Pi is emulálhatja őket: bejövő hívás a gyári telefon-képernyőn, AA navigációs nyilak a gyári kijelzőn. Ehhez a pontos formátumot az EHU32 forrásából vagy CAN-felvételből kell kideríteni ⚠️.
+- **A beállítások menüt (óra, dátum, nyelv, kontraszt) a rádió *Settings* gombja nyitja**, és a GID-nek nincs saját gombja, mint a TID-nek.
+  - Rádió nélkül tehát nem lehetne órát állítani, nyári/téli időszámításkor sem, és RDS-szinkron sincs.
+  - **Ezért nálad az A változat („a rádió marad”) az erősen ajánlott.** A B változat csak akkor jöhet szóba, ha CAN-felvétellel bebizonyosodik, hogy a *Settings* gomb emulálható.
+- **Kész kínai fejegység GID-del** rosszabb üzlet:
+  - a beállítások menü és az óraállítás elvész, hacsak nem veszel Connects2 CTSVX002.2 / ACV 42-VX-102 interfészt (+23–35 e);
+  - így a valós ár kb. **63–97 ezer Ft**;
+  - előfordulhat még GID-kódolási gond és hamis hibaüzenet a kijelzőn.
+
+### Ami még hiányzik
+
+1. **Melyik rádió van?** GID mellé jellemzően CD30MP3 vagy CDC40 Opera járt. Fotó a rádió előlapjáról elég.
+2. **Van-e AUX?**
+   - Nyomkodd a forrásváltó gombot (FM/CD), és nézd, megjelenik-e az „AUX”.
+   - A *Settings* menüben is lehet „AUX” menüpont.
+   - Ha nincs, lehet, hogy a hardver tudja, csak aktiválni kell OP-COM-mal.
+3. **Van-e gyári kihangosító (UHP)?** Árulkodó jel, ha a GID főmenüjében van telefon menüpont, a tetőkonzolban mikrofon, vagy telefontartó-adapter a középkonzolban.
 
 ---
 
@@ -110,7 +135,7 @@ Az alapelv: **a gyári kijelző marad és működik**, így minden, amit ma tud,
    └──────────────────────────────────────────────────┘
 ```
 
-### A változat: „a rádió marad” (ajánlott kezdés)
+### A változat: „a rádió marad” (ajánlott kezdés; GID-es autónál a végállapot is)
 
 - Gyári rádió és gyári kijelző bent marad, **semmi gyári funkció nem vész el**, és bármikor visszaállítható.
 - **Hang:** a Pi hangja a rádió **AUX bemenetére** megy. A hangerőt a rádió gombja és a kormánygomb állítja, ahogy eddig.
@@ -333,7 +358,7 @@ Ez köti össze az autót és az AA-t. Referenciakód Astra H-ra: [EHU32](https:
 
 ## 10. Következő lépések
 
-1. **Felmérés:** milyen kijelző és rádió van, van-e AUX és gyári kihangosító. Fotó is jó.
+1. **Felmérés:** a kijelző GID (fotó alapján). Még kell: a rádió típusa, van-e AUX, van-e gyári kihangosító. Lásd [1. fejezet](#ami-még-hiányzik).
 2. **Asztali próba, az autó nélkül:**
    1. Pi4 + RPi OS Lite (Trixie) + LIVI + bármilyen HDMI kijelző.
    2. S20 FE vezeték nélküli AA-val.
