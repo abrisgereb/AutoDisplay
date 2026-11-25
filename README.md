@@ -93,6 +93,48 @@ A CAN-busz részletes leírása (ID-k, bájtok, szövegküldés a gyári kijelz�
    - **Mikrofon:** a tetőkárpitra, a visszapillantó tükör mellé. A kábel az A-oszlop burkolata mögött fut le, a függönylégzsák **mögött**, nem előtte.
    - **Képernyő:** tartóra, a légzsák útjából és a szélvédő látómezejéből kiesve.
 
+### Bővítés: az érintőkijelző eltakarja a GID-et
+
+Ha a 7"-os kijelző a GID helyére vagy elé kerül, a GID-et nem látod. Ezért minden adatát a Pi-nek kell megmutatnia.
+
+**Két feltétel van:**
+1. **A GID bekötve marad.** Ő a gateway, és ő számolja a fedélzeti számítógép (BC) értékeit. Kihúzva eltűnnének az autó adatai a buszról.
+2. Amíg a Check-Control figyelmeztetéseket nem tudjuk kiolvasni, a képernyő legyen könnyen levehető, vagy jelezze a Pi, hogy a GID-en üzenet van.
+
+#### Milyen adatot honnan kap a Pi
+
+| GID-adat | Honnan kapja a Pi | Állapot |
+|---|---|---|
+| Óra, dátum | A Pi saját órája (telefon/NTP), így a GID órájának állítása sem kell többé. A buszon is ott van: MS 0x180 ⚠️, SW 0x440 | ✅ |
+| Külső hőmérséklet, jegesedés-figyelmeztetés | MS 0x683 | ✅ (képlet ⚠️) |
+| Hatótáv | MS 0x4EE | ✅ (formátum ⚠️) |
+| BC1/BC2: megtett út, átlagsebesség, elfogyasztott üzemanyag, átlag- és pillanatnyi fogyasztás; stopper | A GID **belül** számolja, kész érték valószínűleg nincs a buszon. **A Pi ugyanazokból a nyers adatokból maga számolja**: befecskendezés-számláló (0x4ED), kerékút (0x188), sebesség (0x4E8) | ⚠️ kalibrálni kell (lásd lent) |
+| Rádió: állomásnév, CD/MP3 szöveg, menük | a rádió saját üzenetei (0x6C1), a Pi „lehallgatja” | ✅ |
+| Klíma felugró kijelzés | a klímapanel üzenetei (0x6C8) | ✅ ha digitális klíma (ECC) van |
+| Check-Control figyelmeztetések (izzó, ablakmosó, kulcselem, TPMS) | ismeretlen. Lehet MS 0x2B0, vagy csak az egyvezetékes SW-CAN-en jön | ⚠️ CAN-felvétel kell. SW-CAN-hez külön egyvezetékes transzceiver kell (pl. NCV7356 vagy TH8056 chip) |
+| Beállítások menü | rejtett GID-nél nem kell: az órát a Pi mutatja, a rádió hangbeállításait egyszer kell beállítani | ✅ nem kell |
+
+**Kalibrálás:**
+- Amíg a GID még látszik, a Pi saját BC-jét egymás mellett vetjük össze a GID értékeivel, és néhány tankolással.
+- A befecskendezés-számláló átváltási szorzóját így lehet beállítani.
+- Utána mehet rá a takarás.
+
+A komoly figyelmeztetések (olajnyomás, töltés, fék, légzsák, motor) lámpaként az óracsoportban vannak. A GID Check-Control üzenetei inkább kiegészítő jellegűek ⚠️.
+
+#### Fizikai kivitel
+
+- **Méret.**
+  - Egy 7"-os panel befér a kijelzőházba: fórumon 7"-os TFT-t építettek a CID keretébe ráspolyozva, kb. 4 mm képmagasság-veszteséggel. Mást Nexus 7 tabletet szerelt be 3D nyomtatott kerettel.
+  - A GID és a CID valószínűleg ugyanabba a házba illik ⚠️. **Mérd meg a nyílást.**
+- **1. mód: képernyő a GID elé.** 3D nyomtatott keret tartja. A GID a helyén marad, nem kell hosszabbító. A legegyszerűbb, és visszaállítható.
+- **2. mód: a GID kijön.** Hosszabbító kábellel a műszerfal mögé vagy a kesztyűtartóba kerül, a 7"-os pedig a helyére. Gyáriasabb, de több munka.
+- **A Pi a kesztyűtartó mögé kerül**, onnan HDMI és USB kábel megy fel a kijelzőházhoz (~1 m). Ezért jobb a HDMI-s panel, mint a rövid szalagkábeles DSI.
+- **Előny:**
+  - A kijelzőház peremén lévő napellenző árnyékol, így napon is jobban olvasható.
+  - Magasan van, vezetés közben kevésbé kell lenézni.
+- **Hátrány:** messzebb van érintéshez. Ezért a bal kormánygörgő lesz az AA forgatógombja: forgatás = léptetés, nyomás = kiválasztás. Az AA ismeri a forgatógombos vezérlést; hogy a LIVI-ben ez hogyan köthető be, ellenőrizni kell ⚠️.
+- **Pluszköltség:** 3D nyomtatott keret 2–5 e, hosszabb HDMI és USB kábel 2–3 e, opcionálisan SW-CAN transzceiver 2–4 e *[becslés]*.
+
 ---
 
 ## 1. Első lépés: mi van pontosan a kocsiban?
