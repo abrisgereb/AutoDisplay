@@ -26,6 +26,53 @@ Jelölések:
 
 **Alternatíva Pi helyett:** **CANable 2.0** USB-CAN adapter **candleLight firmware-rel** (7–15 e), bármilyen Linuxos laptoppal. Az slcan firmware nem jó, mert nem tudja a 95,238 kbit/s-ot.
 
+### 1.1 Ha az olcsó kék MCP2515 modulod van (HW-184)
+
+Ez a kék lap MCP2515 vezérlővel és **TJA1050** CAN-meghajtóval használható, de **nem köthető közvetlenül a Pi-re**.
+
+**Miért nem:**
+- A TJA1050-nek **5 V** kell, és a lap egyetlen VCC lábról táplálja az MCP2515-öt is.
+- 5 V-on az MCP2515 az **SO** (MISO) és **INT** lábon 5 V-os jelet ad.
+- A Pi GPIO-lábai csak 3,3 V-ot bírnak, ettől tönkremehetnek.
+- 3,3 V-on táplálva pedig a TJA1050 a specifikáción kívül működik.
+
+**1. megoldás, forrasztás nélkül: szintillesztő (ajánlott).**
+
+- Kell hozzá **kétirányú szintillesztő**: két 4 csatornás BSS138-as panel, vagy egy 8 csatornás. Néhány száz forint.
+- A modul 5 V-ot kap, a Pi felé minden jelvezeték a szintillesztőn megy át.
+
+| Pi láb (fizikai) | Szintillesztő | HW-184 láb |
+|---|---|---|
+| 2 (5 V) | HV | VCC |
+| 1 (3,3 V) | LV | – |
+| 6 (GND) | GND | GND |
+| 23 (GPIO11, SCLK) | LV1 ↔ HV1 | SCK |
+| 19 (GPIO10, MOSI) | LV2 ↔ HV2 | SI |
+| 21 (GPIO9, MISO) | LV3 ↔ HV3 | SO |
+| 24 (GPIO8, CE0) | LV4 ↔ HV4 | CS |
+| 22 (GPIO25) | LV5 ↔ HV5 | INT |
+
+A `config.txt` sora ehhez a modulhoz:
+
+```
+dtoverlay=mcp2515-can0,oscillator=8000000,interrupt=25,spimaxfrequency=1000000
+```
+
+- A HW-184 kristálya általában **8 MHz** (a fém tokon `8.000` felirat). Ha nálad más, az `oscillator` értékét ahhoz igazítsd.
+- Ha a `dmesg` hibát mutat, vagy üzenetek vesznek el, vedd le a `spimaxfrequency`-t `500000`-re. A BSS138-as szintillesztők nem gyorsak, de a 95 kbit/s-os buszhoz ennyi bőven elég.
+
+**2. megoldás, SMD forrasztással: meghajtócsere.**
+- Cseréld le a TJA1050-et (U1, 8 lábú) **SN65HVD230**-ra. Lábkiosztásra kompatibilis ⚠️, és 3,3 V-ról megy.
+- Utána az egész modul 3,3 V-ról járhat (VCC a Pi 1-es lábára), szintillesztő nélkül.
+
+**Netes mod, nem ajánlott:** ha a TJA1050 tápját átvágással leválasztod 5 V-ra, az MCP2515 pedig 3,3 V-ot kap, a TJA1050 5 V-os kimenete megy az MCP2515 bemenetére. Ez a specifikáción kívül van.
+
+**A HW-184 jumperei:**
+- **J1 = 120 Ω-os lezáró ellenállás.** Az autóhoz **vedd le a jumpert**, mert a busz már le van zárva.
+- **J3:** ugyanaz a H és L, mint a csavaros sorkapocson.
+
+**Földelés:** a 4-es vagy 5-ös OBD lábat a modul GND tüskéjére (J4) kösd, ugyanoda, ahová a Pi földje megy.
+
 ---
 
 ## 2. A Pi előkészítése otthon
